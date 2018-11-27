@@ -1,47 +1,46 @@
 package com.toutjuste.kata4;
 
-import com.toutjuste.kata4.model.Kata4ErrorResponse;
 import com.toutjuste.kata4.model.Kata4Response;
-import org.springframework.http.HttpStatus;
+import com.toutjuste.kata4.service.Kata4Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.constraints.Pattern;
-import java.util.Set;
+import java.util.List;
 
-@Controller
+@RestController
 public class Kata4Controller {
     private static final String validProviders = "^(PWC|BLU)$";
 
+    private Kata4Service kata4Service;
+
+    @Autowired
+    public Kata4Controller(Kata4Service kata4Service) {
+        this.kata4Service = kata4Service;
+    }
+
     @GetMapping(value = "/cf")
     @ResponseBody
-    public String getCF() {
-        //TODO real implementation
-        return "[{\n" +
-                "description: xx\n" +
-                "api_version: yy\n" +
-                "},\n" +
-                "{\n" +
-                "Description: xx1\n" +
-                "api_version: yy1\n" +
-                "} ]\n";
+    public ResponseEntity getCF() {
+        List<Kata4Response> response = kata4Service.getProviders();
+        if (!response.isEmpty()) {
+            return ResponseEntity.ok().body(response);
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping(value = "/cf/{provider}")
     @ResponseBody
-    public ResponseEntity<String> getCF(@PathVariable("provider") String provider) {
-        if (!provider.matches(validProviders)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Kata4ErrorResponse().toString());
+    public ResponseEntity<List<Kata4Response>> getCF(@PathVariable("provider") String provider) {
+        if (provider.matches(validProviders)) {
+            List<Kata4Response> response = kata4Service.getProviders(provider);
+            if (!response.isEmpty()) {
+                return ResponseEntity.ok().body(response);
+            }
         }
-        //TODO real implementation
-        return ResponseEntity.ok("{\n" +
-                "description: xx\n" +
-                "api_version: yy\n" +
-                "}\n");
+        return ResponseEntity.badRequest().build();
     }
 }

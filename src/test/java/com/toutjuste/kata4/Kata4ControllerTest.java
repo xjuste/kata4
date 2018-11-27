@@ -1,8 +1,10 @@
 package com.toutjuste.kata4;
 
+import com.toutjuste.kata4.service.Kata4ServiceImpl;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,7 +30,7 @@ public class Kata4ControllerTest {
     public static void setUpValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        mockMvc = MockMvcBuilders.standaloneSetup(new Kata4Controller()).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(new Kata4Controller(new Kata4ServiceImpl())).build();
     }
 
     //Happy Flows

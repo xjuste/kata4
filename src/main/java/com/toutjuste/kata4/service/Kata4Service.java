@@ -7,4 +7,5 @@ import java.util.List;
 public interface Kata4Service {
 
     public List<Kata4Response> getProviders();
+    public List<Kata4Response> getProviders(String provider);
 }
